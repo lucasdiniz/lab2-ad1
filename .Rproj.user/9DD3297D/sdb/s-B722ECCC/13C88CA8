@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\n# This is the server logic for a Shiny web application.\n# You can find out more about building applications with Shiny here:\n#\n# http://shiny.rstudio.com\n#\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(plotly)\n\nshinyServer(function(input, output) {\n  \n  dados <- read_csv(file = \"dados/series_from_imdb.csv\") %>% select(series_name, series_ep, season, season_ep, Episode, UserRating, UserVotes)\n  \n  output$distPlot <- renderPlotly({\n\n    # generate bins based on input$bins from ui.R\n    aux <- dados %>% filter(series_name == input$seriesNames) %>% group_by(season)\n    #x <- aux$UserRating\n    #y <- aux$series_ep\n    #bins <- seq(min(x), max(x), length.out = input$bins + 1)\n\n    # draw the histogram with the specified number of bins\n    #hist(x, breaks = bins, col = 'darkgray', border = 'white')\n    plotly(aux, x = ~UserRating, y = ~season_ep)\n\n  })\n  \n  nomes <- unique(dados %>% select(series_name))\n  \n  output$seriesNames <- renderUI({\n    selectInput(\"seriesNames\", \"Escolha uma série\", as.list(nomes)) \n  })\n\n})\n",
+    "created" : 1497270375172.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2905646785",
+    "id" : "13C88CA8",
+    "lastKnownWriteTime" : 1497278199,
+    "last_content_update" : 1497278199287,
+    "path" : "C:/Users/lucas/Desktop/ad1/lab2-cp2/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
