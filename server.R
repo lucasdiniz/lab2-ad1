@@ -6,9 +6,14 @@
 #
 
 library(shiny)
-require(shinysky)
 library(tidyverse)
 library(plotly)
+
+
+options(shiny.error = function() {
+  stop()
+})
+
 
 shinyServer(function(input, output) {
   
@@ -57,19 +62,19 @@ shinyServer(function(input, output) {
       borderwidth = 1)
     
     
-    
-    plot_ly(dadosFiltrados %>% mutate(season = paste("Temporada", season)),
+   plot_ly(
+            dadosFiltrados %>% mutate(season = paste("Temporada", season)),
             x = ~season_ep,
             y = ~UserRating,
             color = ~as.character(season),
             type = "scatter",
             mode = "lines+markers",
             colors = "Set1",
-            marker = list(size = ~UserVotes/input$sizePoints),
+            marker = list(size = ~UserVotes * input$sizePoints/50000),
             text = ~paste("<b>Episodio",season_ep, "</b><br>" , Episode, "<br>Nota: ", UserRating, "<br>Total de votos:", UserVotes),
             hoverinfo = "text",
             source = "subset"
-            ) %>%
+    ) %>%
       layout(
         autosize = TRUE,
         title = ~paste("Evolução do rating de", series_name),
@@ -78,12 +83,13 @@ shinyServer(function(input, output) {
         annotations = a,
         legend = l
       )
+    
+
 
   })
   
   output$seriesNames <- renderUI({
     nomes <- as.list(unique(dados %>% arrange(series_name) %>% select(series_name)))
-
     selectInput("seriesNames", "Escolha uma série", nomes) 
   })
   
@@ -98,7 +104,18 @@ shinyServer(function(input, output) {
                                            UserRating %in% event.data$y)
        #teste
        #https://plot.ly/r/shiny-coupled-events/
-            plot_ly(teste , x = ~season_ep, y = ~UserRating, type = "bar", color = ~as.character(season), colors = "Set2")
+            plot_ly(teste %>% mutate(season = paste("Temporada", season)),
+                    x = ~season_ep,
+                    y = ~UserRating,
+                    type = "bar",
+                    color = ~season,
+                    colors = "Set2",
+                    text = ~paste("<b>Episodio",season_ep, "</b><br>" , Episode, "<br>Nota: ", UserRating, "<br>Total de votos:", UserVotes),
+                    hoverinfo = "text") %>% 
+              layout(
+                xaxis = list(title = "Episódio da temporada"),
+                yaxis = list(title = "Rating dos Usuários")
+              )
     }
   })
   
@@ -112,8 +129,17 @@ shinyServer(function(input, output) {
       teste <- dadosFiltrados %>% filter((as.integer(substr(season, 0, length(season))) - 1) %in% event.data$curveNumber & 
                                            season_ep %in% event.data$x & 
                                            UserRating %in% event.data$y)
+      xvalues <- c(1,2,3,4,5,6,7,8,9,10)
+      yvalues <- c(teste$r1*100,teste$r2*100,teste$r3*100,teste$r4*100,teste$r5*100,teste$r6*100,teste$r7*100,teste$r8*100,teste$r9*100,teste$r10*100)
       
-      plot_ly(teste, x = ~c(1,2,3,4,5,6,7,8,9,10), y = ~c(r1*100,r2*100,r3*100,r4*100,r5*100,r6*100,r7*100,r8*100,r9*100,r10*100), type = "bar") %>% layout(yaxis = list(title = "Porcentagem do total de notas"), xaxis = list(title = "Nota"))
+      
+      plot_ly(teste, x = ~xvalues,
+              y = ~yvalues,
+              type = "bar", text = ~paste0("<b>", format(yvalues, digits = 2),"%</b> de Notas entre ",xvalues-1," e ",xvalues),
+              hoverinfo = "text") %>% 
+        layout(title = ~paste("Temporada", season, "Episodio", season_ep),
+              yaxis = list(title = "Porcentagem do total de notas"), 
+               xaxis = list(title = "Nota"))
     }
     
   })

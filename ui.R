@@ -7,13 +7,12 @@
 
 library(shiny)
 library(plotly)
-require(shinysky)
-
 
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  titlePanel(div("Explore dados sobre a classificação de 600+ séries no IMDB", class="text-center"), windowTitle = "SeriesExplorer"),
+  br(),br(),
   
   # Sidebar with a slider input for number of bins
   sidebarLayout(
@@ -24,7 +23,7 @@ shinyUI(fluidPage(
                   ticks = FALSE,
                   min = 10,
                   max = 1000,
-                  value = 300),
+                  value = 40),
       
       tags$script(HTML("
         $(document).ready(function() {setTimeout(function() {
@@ -35,12 +34,17 @@ shinyUI(fluidPage(
                 ),
       
       plotlyOutput("plotSelected"),
-      helpText("Clique em um ponto ou selecione alguns pontos no gráfico para obter mais informações.")
+      helpText("Instruções:"),
+      helpText("1 - Selecione a série desejada"),
+      helpText("2 - Clique em um episodio para obter informaçoes sobre as notas desse episodio"),
+      helpText("3 - Selecione alguns pontos no gráfico para compara-los separadamente"),
+      helpText("4 - O tamanho dos pontos representa o total de votos recebidos, caso estejam muito grandes você pode diminui-los")
     ),
     
     # Show a plot of the generated distribution
     mainPanel(            
       plotlyOutput("distPlot"),
+      br(),
       plotlyOutput("pointInfo")
     )
   )
