@@ -12,12 +12,12 @@ library(plotly)
 
 shinyServer(function(input, output) {
   
-  dados <- read_csv(file = "dados/series_from_imdb.csv") %>% select(series_name, series_ep, season, season_ep, Episode, UserRating, UserVotes)
+  dados <- read_csv(file = "dados/series_from_imdb.csv") %>% select(series_name, series_ep, season, season_ep, Episode, UserRating, UserVotes,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10)
   
   output$distPlot <- renderPlotly({
 
     # generate bins based on input$bins from ui.R
-    dadosFiltrados <- dados %>% filter(series_name == input$seriesNames) %>% mutate(season = paste("Temporada", season))
+    dadosFiltrados <- dados %>% filter(series_name == input$seriesNames)
     #x <- aux$UserRating
     #y <- aux$series_ep
     #bins <- seq(min(x), max(x), length.out = input$bins + 1)
@@ -58,7 +58,7 @@ shinyServer(function(input, output) {
     
     
     
-    plot_ly(dadosFiltrados,
+    plot_ly(dadosFiltrados %>% mutate(season = paste("Temporada", season)),
             x = ~season_ep,
             y = ~UserRating,
             color = ~as.character(season),
@@ -87,18 +87,35 @@ shinyServer(function(input, output) {
     selectInput("seriesNames", "Escolha uma série", nomes) 
   })
   
-  output$plotSelected <- renderPrint({
+  output$plotSelected <- renderPlotly({
     event.data <- event_data("plotly_selected", source = "subset")
     if(is.null(event.data) == T) return(NULL)
-    else     
-      as.list(event.data)
-       teste <- subset(plot.df, Class == "malignant")[subset(event.data, curveNumber == 0)$pointNumber + 1,]
- 
+    else {    
+      dadosFiltrados <- dados %>% filter(series_name == input$seriesNames)
+      #as.list(event.data)
+      teste <- dadosFiltrados %>% filter((as.integer(substr(season, 0, length(season))) - 1) %in% event.data$curveNumber & 
+                                           season_ep %in% event.data$x & 
+                                           UserRating %in% event.data$y)
+       #teste
        #https://plot.ly/r/shiny-coupled-events/
-        #    plot_ly(plot.summ, x = ~Class, y = ~Count, type = "bar", source = "select", color = ~Class) %>%
-   #   layout(title = "No. of Malignant and Benign cases <br> in Selection",
-    #         plot_bgcolor = "6A446F",
-     #        yaxis = list(domain = c(0, 0.9)))
+            plot_ly(teste , x = ~season_ep, y = ~UserRating, type = "bar", color = ~as.character(season), colors = "Set2")
+    }
+  })
+  
+  output$pointInfo <- renderPlotly({
+    
+    event.data <- event_data("plotly_click", source = "subset")
+    if(is.null(event.data)) return(NULL)
+    else{
+      dadosFiltrados <- dados %>% filter(series_name == input$seriesNames)
+      #as.list(event.data)
+      teste <- dadosFiltrados %>% filter((as.integer(substr(season, 0, length(season))) - 1) %in% event.data$curveNumber & 
+                                           season_ep %in% event.data$x & 
+                                           UserRating %in% event.data$y)
+      
+      plot_ly(teste, x = ~c(1,2,3,4,5,6,7,8,9,10), y = ~c(r1*100,r2*100,r3*100,r4*100,r5*100,r6*100,r7*100,r8*100,r9*100,r10*100), type = "bar") %>% layout(yaxis = list(title = "Porcentagem do total de notas"), xaxis = list(title = "Nota"))
+    }
+    
   })
     
 })

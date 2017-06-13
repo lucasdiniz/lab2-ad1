@@ -34,12 +34,14 @@ shinyUI(fluidPage(
                        ")
                 ),
       
-      verbatimTextOutput("plotSelected")
+      plotlyOutput("plotSelected"),
+      helpText("Clique em um ponto ou selecione alguns pontos no gráfico para obter mais informações.")
     ),
     
     # Show a plot of the generated distribution
     mainPanel(            
-      plotlyOutput("distPlot")
+      plotlyOutput("distPlot"),
+      plotlyOutput("pointInfo")
     )
   )
 ))
