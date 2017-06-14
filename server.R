@@ -71,7 +71,7 @@ shinyServer(function(input, output) {
             mode = "lines+markers",
             colors = "Set1",
             marker = list(size = ~UserVotes * input$sizePoints/50000),
-            text = ~paste("<b>Episodio",season_ep, "</b><br>" , Episode, "<br>Nota: ", UserRating, "<br>Total de votos:", UserVotes),
+            text = ~paste("<b>Episodio",season_ep, "</b><br>" , Episode, "<br>Nota: ", UserRating, "<br>Total de votos:", UserVotes,"<br><b>Clique para ver mais!</b>"),
             hoverinfo = "text",
             source = "subset"
     ) %>%
@@ -113,6 +113,7 @@ shinyServer(function(input, output) {
                     text = ~paste("<b>Episodio",season_ep, "</b><br>" , Episode, "<br>Nota: ", UserRating, "<br>Total de votos:", UserVotes),
                     hoverinfo = "text") %>% 
               layout(
+                title = "Comparando separadamente",
                 xaxis = list(title = "Episódio da temporada"),
                 yaxis = list(title = "Rating dos Usuários")
               )
