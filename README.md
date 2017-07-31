@@ -1,5 +1,5 @@
 # lab2-ad1
-Web app that show data visualizations about movies. 
+Web app that shows some visualizations about a movies dataset.
 
 Technologies used:
 - R
