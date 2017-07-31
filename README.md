@@ -1,5 +1,5 @@
 # lab2-ad1
-Web app that shows some visualizations about a movies dataset.
+Web app that shows some visualizations about a TV shows dataset.
 
 Link to access the application: https://lucazdinis.shinyapps.io/lab2-ad1/
 
